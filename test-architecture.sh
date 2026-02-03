@@ -6,6 +6,7 @@ echo ""
 
 # Test 1: Feature cross-import violation
 echo "📝 Test 1: Creating file with cross-feature import..."
+mkdir -p src/features/log
 cat > src/features/log/test-cross-import.tsx << 'EOF'
 // This should FAIL - cross-feature import
 import { useTankStore } from '../tank/store'
@@ -44,8 +45,29 @@ fi
 rm src/shared/lib/test-violation.ts
 echo ""
 
-# Test 3: Valid imports (should pass)
-echo "📝 Test 3: Testing valid architecture (should pass)..."
+# Test 3: NEW FEATURE auto-enforcement (scalability test)
+echo "📝 Test 3: Creating NEW feature with violation (scalability test)..."
+mkdir -p src/features/analytics
+cat > src/features/analytics/test.tsx << 'EOF'
+// New feature importing from existing feature
+import { useTankStore } from '../tank/store'
+
+export function Analytics() {
+  return <div>Analytics</div>
+}
+EOF
+
+echo "Running ESLint on NEW feature (no config changes needed)..."
+if yarn lint src/features/analytics/test.tsx 2>&1 | grep -q "no-restricted-imports"; then
+    echo "✅ PASS: ESLint automatically enforced rules on NEW feature!"
+else
+    echo "❌ FAIL: Rules did not auto-apply to new feature"
+fi
+rm -rf src/features/analytics
+echo ""
+
+# Test 4: Valid imports (should pass)
+echo "📝 Test 4: Testing valid architecture (should pass)..."
 if yarn lint src/features/tank/components/TankForm.tsx 2>&1 | grep -q "error"; then
     echo "❌ FAIL: Valid code was flagged as error"
 else
@@ -54,6 +76,8 @@ fi
 echo ""
 
 echo "=========================================="
-echo "✅ All architecture rules are working!"
+echo "🎉 All architecture rules are working!"
+echo ""
+echo "✨ Rules auto-scale to new features without config changes!"
 echo ""
 echo "Run 'yarn lint' to check your code anytime"

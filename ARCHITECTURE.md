@@ -2,6 +2,10 @@
 
 This project uses ESLint to automatically enforce feature-based architecture rules.
 
+## 🚀 Auto-Scaling Rules
+
+**Rules automatically apply to ALL features** - no config changes needed when adding new features!
+
 ## 🏗️ Architecture Rules
 
 ### ❌ Features Cannot Cross-Import
@@ -116,11 +120,43 @@ import { TankForm } from '@/features/tank/components/TankForm' // ❌ BAD
 
 ## 🔧 How It Works
 
-ESLint is configured with `no-restricted-imports` rules in `eslint.config.js`:
+ESLint is configured with **universal patterns** in `eslint.config.js`:
 
-- **Per-feature rules**: Each feature has specific import restrictions
+```javascript
+// ✅ Universal rule - applies to ANY feature!
+{
+  files: ['src/features/**/*.{ts,tsx}'],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            // Block ../other-feature/** pattern
+            group: ['../*/!(index).{ts,tsx}', '../*/**'],
+            message: '🚫 Features cannot import from other features'
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+- **Universal pattern**: Works for any feature (tank, log, analytics, etc.)
+- **No manual updates**: Add new features without touching ESLint config
 - **Shared rules**: Shared code cannot import from features
 - **Automatic enforcement**: Runs on every commit via Husky
+
+### When you add a new feature:
+
+```bash
+# 1. Create new feature
+mkdir src/features/analytics
+
+# 2. ESLint rules automatically apply! ✅
+# No need to update eslint.config.js
+```
 
 ---
 

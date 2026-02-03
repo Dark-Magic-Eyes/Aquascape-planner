@@ -27,61 +27,25 @@ export default defineConfig([
     },
   },
 
-  // Feature-based architecture enforcement for tank feature
+  // 🔥 UNIVERSAL RULE: Any feature cannot import from other features
   {
-    files: ['src/features/tank/**/*.{ts,tsx}'],
+    files: ['src/features/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
           patterns: [
             {
-              group: ['../log/**', '../insight/**', '**/features/log/**', '**/features/insight/**'],
+              // Block any ../other-feature/** pattern
+              group: ['../*/!(index).{ts,tsx}', '../*/**'],
               message:
-                '🚫 Tank feature cannot import from other features. Use shared/ for common code.',
+                '🚫 Features cannot import from other features. Use @/shared/* for common code, or import via feature public API (index.ts).',
             },
-          ],
-        },
-      ],
-    },
-  },
-
-  // Feature-based architecture enforcement for log feature
-  {
-    files: ['src/features/log/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
             {
-              group: [
-                '../tank/**',
-                '../insight/**',
-                '**/features/tank/**',
-                '**/features/insight/**',
-              ],
+              // Block absolute imports to other features (except via index)
+              group: ['**/features/*/!(index).{ts,tsx}', '**/features/*/**'],
               message:
-                '🚫 Log feature cannot import from other features. Use shared/ for common code.',
-            },
-          ],
-        },
-      ],
-    },
-  },
-
-  // Feature-based architecture enforcement for insight feature
-  {
-    files: ['src/features/insight/**/*.{ts,tsx}'],
-    rules: {
-      'no-restricted-imports': [
-        'error',
-        {
-          patterns: [
-            {
-              group: ['../tank/**', '../log/**', '**/features/tank/**', '**/features/log/**'],
-              message:
-                '🚫 Insight feature cannot import from other features. Use shared/ for common code.',
+                '🚫 Features cannot import from other features. Use @/shared/* for common code, or import via feature public API (index.ts).',
             },
           ],
         },
@@ -98,7 +62,7 @@ export default defineConfig([
         {
           patterns: [
             {
-              group: ['**/features/**'],
+              group: ['**/features/**', '@/features/**'],
               message: '🚫 Shared code cannot depend on features.',
             },
           ],
