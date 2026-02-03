@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 
 export function TankForm() {
   const addTank = useTankStore((state) => state.addTank)
-  
+
   const [formData, setFormData] = useState({
     name: '',
     size: 0,

@@ -8,7 +8,7 @@ export function TankList() {
 
   if (tanks.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
+      <div className="text-muted-foreground py-8 text-center">
         No tanks yet. Create your first tank above!
       </div>
     )

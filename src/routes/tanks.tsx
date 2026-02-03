@@ -9,10 +9,8 @@ function TanksPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold mb-2">Your Tanks</h2>
-        <p className="text-muted-foreground">
-          Manage your aquariums and their configurations
-        </p>
+        <h2 className="mb-2 text-2xl font-bold">Your Tanks</h2>
+        <p className="text-muted-foreground">Manage your aquariums and their configurations</p>
       </div>
 
       <TankForm />

@@ -1,0 +1,15 @@
+# Build outputs
+dist
+node_modules
+.tanstack
+
+# Generated files
+*.gen.ts
+routeTree.gen.ts
+
+# Package manager
+yarn.lock
+package-lock.json
+
+# Git
+.git

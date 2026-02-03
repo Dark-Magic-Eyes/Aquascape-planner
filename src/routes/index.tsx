@@ -10,7 +10,7 @@ function Index() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Welcome to Aquascape Planner</h2>
+        <h2 className="mb-2 text-3xl font-bold">Welcome to Aquascape Planner</h2>
         <p className="text-muted-foreground text-lg">
           Track your aquarium maintenance and get insights to prevent common issues
         </p>
@@ -22,7 +22,7 @@ function Index() {
             <CardTitle>Tanks</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-sm">
               Manage your aquariums and their configurations
             </p>
             <Link to="/tanks">
@@ -36,7 +36,7 @@ function Index() {
             <CardTitle>Maintenance Log</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-sm">
               Record water changes, trimming, and maintenance tasks
             </p>
             <Button className="w-full" disabled>
@@ -50,7 +50,7 @@ function Index() {
             <CardTitle>Insights</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-muted-foreground mb-4 text-sm">
               Get alerts for algae risks and maintenance reminders
             </p>
             <Button className="w-full" disabled>
