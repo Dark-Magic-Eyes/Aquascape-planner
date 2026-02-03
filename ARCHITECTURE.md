@@ -4,11 +4,11 @@ This project uses ESLint to automatically enforce feature-based architecture rul
 
 ## 🚀 Auto-Scaling Rules
 
-**Rules automatically apply to ALL features** - no config changes needed when adding new features!
+**Rules automatically apply to ALL features and enforce clean architecture** - no config changes needed when adding new features!
 
-## 🏗️ Architecture Rules
+## 🏗️ Comprehensive Architecture Rules
 
-### ❌ Features Cannot Cross-Import
+### 1. ❌ Features Cannot Cross-Import
 
 Features are isolated modules and **cannot import from each other**.
 
@@ -192,3 +192,139 @@ yarn lint
 
 - [CODE_QUALITY.md](./CODE_QUALITY.md) - Linting & formatting tools
 - [README.md](./README.md) - Project overview
+
+---
+
+### 2. ❌ Routes: Only Orchestration, No Business Logic
+
+Routes should only compose features, not implement logic.
+
+```typescript
+// ❌ BAD - Creating store in route
+// src/routes/tanks.tsx
+import { create } from 'zustand'
+
+const useLocalStore = create(() => ({ count: 0 }))  // ❌ ERROR!
+
+export function TanksPage() {
+  const count = useLocalStore(state => state.count)
+  return <div>{count}</div>
+}
+```
+
+**ESLint error:**
+
+```
+🚫 Routes should not create stores.
+Move business logic to features/
+```
+
+**✅ CORRECT:**
+
+```typescript
+// src/routes/tanks.tsx
+import { TankForm, TankList } from '@/features/tank'  // ✅ Orchestrate features
+
+export function TanksPage() {
+  return (
+    <div>
+      <TankForm />
+      <TankList />
+    </div>
+  )
+}
+```
+
+---
+
+### 3. ❌ Shared/UI: Pure Components Only
+
+Shared UI components must be presentational, no state management.
+
+```typescript
+// ❌ BAD - State management in shared component
+// src/shared/ui/SearchBox.tsx
+import { create } from 'zustand'  // ❌ ERROR!
+
+const useSearchStore = create(() => ({ query: '' }))
+
+export function SearchBox() {
+  const query = useSearchStore(state => state.query)
+  return <input value={query} />
+}
+```
+
+**ESLint error:**
+
+```
+🚫 Shared UI components should not use state management.
+Keep them pure/presentational.
+```
+
+**✅ CORRECT:**
+
+```typescript
+// src/shared/ui/SearchBox.tsx
+type Props = {
+  value: string
+  onChange: (value: string) => void
+}
+
+export function SearchBox({ value, onChange }: Props) {
+  return <input value={value} onChange={e => onChange(e.target.value)} />
+}
+```
+
+---
+
+## 📋 Complete Rules Summary
+
+| Rule                     | Enforced On    | What It Prevents                          |
+| ------------------------ | -------------- | ----------------------------------------- |
+| **No cross-imports**     | `features/**`  | Features importing from other features    |
+| **Shared independence**  | `shared/**`    | Shared code depending on features         |
+| **Routes orchestration** | `routes/**`    | Business logic in routes (store creation) |
+| **UI purity**            | `shared/ui/**` | State management in shared components     |
+
+---
+
+## 🎯 Where to Put Code
+
+### ✅ Feature-specific code → `features/[name]/`
+
+```
+features/tank/
+├── components/     # Tank-specific UI
+├── store.ts        # Tank business logic
+├── types.ts        # Tank models
+└── index.ts        # Public API
+```
+
+### ✅ Reusable UI → `shared/ui/`
+
+```
+shared/ui/
+├── button.tsx      # Pure button component
+├── card.tsx        # Pure card component
+└── input.tsx       # Pure input component
+```
+
+### ✅ Utilities → `shared/lib/`
+
+```
+shared/lib/
+├── utils.ts        # Helper functions
+├── validators.ts   # Validation logic
+└── formatters.ts   # Formatting functions
+```
+
+### ✅ Routes → `routes/`
+
+```
+routes/
+├── __root.tsx      # Layout only
+├── index.tsx       # Compose features
+└── tanks.tsx       # Compose Tank feature
+```
+
+---

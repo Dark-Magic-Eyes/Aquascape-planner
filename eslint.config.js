@@ -70,4 +70,44 @@ export default defineConfig([
       ],
     },
   },
+
+  // Routes: Only orchestration, no business logic
+  {
+    files: ['src/routes/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          // Prevent Zustand store creation in routes
+          selector: 'CallExpression[callee.name="create"] > ArrowFunctionExpression',
+          message: '🚫 Routes should not create stores. Move business logic to features/',
+        },
+        {
+          // Prevent complex state logic in routes
+          selector:
+            'VariableDeclarator[init.callee.name="useState"] ~ VariableDeclarator[init.callee.name="useState"] ~ VariableDeclarator[init.callee.name="useState"]',
+          message: '🚫 Too much state in route component. Extract to feature component.',
+        },
+      ],
+    },
+  },
+
+  // Shared/UI: Only presentational components, no business logic
+  {
+    files: ['src/shared/ui/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['zustand', 'jotai', '@tanstack/react-query'],
+              message:
+                '🚫 Shared UI components should not use state management. Keep them pure/presentational.',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ])
