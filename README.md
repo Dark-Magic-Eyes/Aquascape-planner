@@ -1,73 +1,168 @@
-# React + TypeScript + Vite
+# Aquascape Planner / Journal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 1. Mục tiêu dự án
 
-Currently, two official plugins are available:
+Một web app cá nhân dùng để:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Ghi chép quá trình setup và chăm sóc bể thủy sinh
+- Theo dõi các mốc quan trọng theo thời gian (timeline)
+- Phát hiện sớm các rủi ro (tảo, thiếu bảo trì…) bằng rule-based insight
 
-## React Compiler
+Dự án được thiết kế để:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Hoàn thành trong ~1 tuần (buổi tối 1–2h)
+- Tập trung vào **kiến trúc + business logic**
+- Phù hợp làm **portfolio project**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 2. Core idea
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Người chơi thủy sinh thường chăm bể dựa vào cảm tính:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- Không nhớ lần thay nước gần nhất
+- Không rõ nguyên nhân tảo xuất hiện
+- Điều chỉnh đèn / lọc / CO₂ thiếu cơ sở
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+→ App này giải quyết bằng **log + timeline + rule engine**  
+→ Không dùng AI, chỉ dùng logic rõ ràng, dễ kiểm soát
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 3. Tính năng chính (MVP)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### 3.1 Tank (Bể)
+
+- Tạo / xem danh sách bể
+- Thông tin cơ bản:
+  - Kích thước
+  - Loại lọc
+  - Đèn (giờ/ngày)
+  - Có / không CO₂
+
+### 3.2 Log (Nhật ký)
+
+- Ghi log theo thời gian:
+  - Thay nước (%)
+  - Tỉa cây
+  - Vệ sinh lọc
+  - Vấn đề (tảo, lá úa…)
+
+### 3.3 Timeline
+
+- Hiển thị log theo trục thời gian
+- Nhìn được tiến trình phát triển và sự cố
+
+### 3.4 Insight (Rule-based)
+
+Ví dụ:
+
+- Đèn > 8h/ngày + không thay nước > 10 ngày → cảnh báo tảo
+- Không vệ sinh lọc > 30 ngày → nhắc bảo trì
+- Cây đỏ nhạt màu + ánh sáng thấp → gợi ý tăng sáng
+
+---
+
+## 4. Tech stack
+
+- **React + TypeScript**
+- **Vite**
+- **Zustand** – state theo feature
+- **TanStack Router** – file-based routing
+- **shadcn/ui** – UI primitives
+- **TailwindCSS**
+- Storage: `localStorage` / `IndexedDB` (no backend)
+
+---
+
+## 5. Kiến trúc tổng thể
+
+### 5.1 Nguyên tắc
+
+- Feature-based architecture
+- Mỗi feature tự quản lý:
+  - model
+  - store (zustand)
+  - service
+  - UI components
+- Không có global mega-store
+- Router chỉ làm nhiệm vụ orchestration
+
+### 5.2 Cấu trúc thư mục
+
+src/
+├─ app/ # router, providers
+├─ routes/ # tanstack router (entry point)
+├─ features/
+│ ├─ tank/
+│ ├─ log/
+│ └─ insight/
+├─ shared/
+│ ├─ ui/ # shadcn primitives
+│ ├─ lib/
+│ └─ hooks/
+└─ main.tsx
+
+---
+
+## 6. Vai trò từng thư viện
+
+### Zustand
+
+- Mỗi feature = 1 store riêng
+- Chỉ chứa business state
+- Có thể persist
+
+### TanStack Router
+
+- Route = nơi ghép feature
+- Không xử lý logic nghiệp vụ
+- Dễ scale, type-safe
+
+### shadcn/ui
+
+- Chỉ dùng làm UI primitive (Button, Card, Dialog…)
+- Không đặt component nghiệp vụ vào `shared/ui`
+
+---
+
+## 7. Quy tắc import
+
+- `routes` → `features`, `shared`
+- `features` → `shared`
+- `shared` → không import ngược
+
+---
+
+## 8. Phạm vi phát triển
+
+### Bắt buộc (1 tuần)
+
+- CRUD Tank
+- CRUD Log
+- Timeline
+- Rule-based Insight
+
+### Nếu còn thời gian
+
+- Export / Import JSON
+- Dark mode
+- Persist store
+- README giải thích kiến trúc (file này)
+
+---
+
+## 9. Mục tiêu học được
+
+- Thiết kế feature-based architecture thực tế
+- Dùng Zustand đúng vai trò
+- Tổ chức TanStack Router sạch
+- Viết business logic tách khỏi UI
+
+---
+
+## 10. Ghi chú
+
+- Đây là project cá nhân
+- Không ưu tiên UI cầu kỳ
+- Ưu tiên code clarity, ranh giới rõ ràng
