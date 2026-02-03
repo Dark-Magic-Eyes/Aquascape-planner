@@ -1,6 +1,6 @@
 import { useTankStore } from '../store'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
+import { Button } from '@/shared/ui/button'
 
 export function TankList() {
   const tanks = useTankStore((state) => state.tanks)

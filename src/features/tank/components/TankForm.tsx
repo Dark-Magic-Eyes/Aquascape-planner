@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTankStore } from '../store'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/shared/ui/button'
+import { Input } from '@/shared/ui/input'
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card'
 
 export function TankForm() {
   const addTank = useTankStore((state) => state.addTank)
